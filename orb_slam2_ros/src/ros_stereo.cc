@@ -84,8 +84,9 @@ int main(int argc, char **argv)
 
     ros::init(argc, argv, "Stereo");
     ros::start();
+    bool bFileName = (((argc - 4) % 2) == 1);
 
-    if(argc != 4)
+    if(argc <= 4)
     {
         cerr << endl << "Usage: rosrun ORB_SLAM2 Stereo path_to_vocabulary path_to_settings do_rectify" << endl;
         ros::shutdown();
@@ -152,11 +153,18 @@ int main(int argc, char **argv)
     //nh is startup and shutdown of the internal node inside a roscpp program
     ros::NodeHandle nodeHandler;
 
-    //set subscribed topics, names changed for ZED Topics
-    message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/kitti/camera_gray_left/image_raw", 1);
-    message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/kitti/camera_gray_right/image_raw", 1);
+    // set subscribed topics, names changed for ZED Topics
+    message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/zed2i/zed_node/left/image_rect_gray", 1);
+    message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/zed2i/zed_node/right/image_rect_gray", 1);
+
+
+    // message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/kitti/camera_gray_left/image_raw", 1);
+    // message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/kitti/camera_gray_right/image_raw", 1);
+
+
     //message_filters::Subscriber<sensor_msgs::Image> left_sub(nh, "/camera/left/image_raw", 1);
     //message_filters::Subscriber<sensor_msgs::Image> right_sub(nh, "camera/right/image_raw", 1);
+
 
     //a policy used by message_filters::sync::Synchronizer to match messages coming on a set of topics
     //can match messages even if they have different time stamps
@@ -180,9 +188,23 @@ int main(int argc, char **argv)
 
     // Save camera trajectory, you find those files in roborace_ws/devel_isolated/orb_slam2_ros/lib/orb_slam2_ros
     // visualize the trajectories with evo-traj package
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_TUM_Format.txt");
-    SLAM.SaveTrajectoryTUM("FrameTrajectory_TUM_Format.txt");
-    SLAM.SaveTrajectoryKITTI("FrameTrajectory_KITTI_Format.txt");
+    string file_name;
+    if (bFileName)
+    {
+        file_name = string(argv[argc - 1]);
+        cout << "file name: " << file_name << endl;
+        // Save camera trajectory
+        const string kf_file = "kf_" + string(argv[argc - 1]) + ".txt";
+        const string f_file = "f_" + string(argv[argc - 1]) + ".txt";
+        SLAM.SaveTrajectoryTUM(f_file);
+        SLAM.SaveKeyFrameTrajectoryTUM(kf_file);
+    }
+    else
+    {
+        SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_TUM_Format.txt");
+        SLAM.SaveTrajectoryTUM("FrameTrajectory_TUM_Format.txt");
+        SLAM.SaveTrajectoryKITTI("FrameTrajectory_KITTI_Format.txt");
+    }
 
     ros::shutdown();
 

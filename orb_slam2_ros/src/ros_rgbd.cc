@@ -75,8 +75,8 @@ int main(int argc, char **argv)
     }
     ros::init(argc, argv, "RGBD");
     ros::start();
-
-    if(argc != 3)
+    bool bFileName = (((argc - 3) % 2) == 1);
+    if(argc <= 3)
     {
         cerr << endl << "Usage: rosrun ORB_SLAM2 RGBD path_to_vocabulary path_to_settings" << endl;
         ros::shutdown();
@@ -92,8 +92,8 @@ int main(int argc, char **argv)
     ImageGrabber igb(&SLAM);
     ros::NodeHandle nodeHandler;
 
-    message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nodeHandler, "/camera/rgb/image_raw", 1);
-    message_filters::Subscriber<sensor_msgs::Image> depth_sub(nodeHandler, "camera/depth_registered/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> rgb_sub(nodeHandler, "/camera/rgb/image_color", 1);
+    message_filters::Subscriber<sensor_msgs::Image> depth_sub(nodeHandler, "/camera/depth/image", 1);
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;
     message_filters::Synchronizer<sync_pol> sync(sync_pol(10), rgb_sub,depth_sub);
     sync.registerCallback(boost::bind(&ImageGrabber::GrabRGBD,&igb,_1,_2));
@@ -105,7 +105,22 @@ int main(int argc, char **argv)
     SLAM.Shutdown();
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    string file_name;
+    if (bFileName)
+    {
+        file_name = string(argv[argc - 1]);
+        cout << "file name: " << file_name << endl;
+        // Save camera trajectory
+        const string kf_file = "kf_" + string(argv[argc - 1]) + ".txt";
+        const string f_file = "f_" + string(argv[argc - 1]) + ".txt";
+        SLAM.SaveTrajectoryTUM(f_file);
+        SLAM.SaveKeyFrameTrajectoryTUM(kf_file);
+    }
+    else
+    {
+        SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+        SLAM.SaveTrajectoryTUM("FrameTrajectory_TUM_Format.txt");
+    }
 
     ros::shutdown();
 

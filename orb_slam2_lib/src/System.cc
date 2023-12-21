@@ -303,7 +303,11 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
             mpLocalMapper->RequestStop();
 
             // Wait until Local Mapping has effectively stopped
-            mtLocalMapping.join();
+            // mtLocalMapping.join();
+            while (!mpLocalMapper->isStopped())
+            {
+                std::this_thread::sleep_for(std::chrono::microseconds(1000));
+            }
 
             mpTracker->InformOnlyTracking(true);
             mbActivateLocalizationMode = false;
