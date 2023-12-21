@@ -153,8 +153,8 @@ int main(int argc, char **argv)
     ros::NodeHandle nodeHandler;
 
     //set subscribed topics, names changed for ZED Topics
-    message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/left/image_rect_color", 1);
-    message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/right/image_rect_color", 1);
+    message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/kitti/camera_gray_left/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/kitti/camera_gray_right/image_raw", 1);
     //message_filters::Subscriber<sensor_msgs::Image> left_sub(nh, "/camera/left/image_raw", 1);
     //message_filters::Subscriber<sensor_msgs::Image> right_sub(nh, "camera/right/image_raw", 1);
 
