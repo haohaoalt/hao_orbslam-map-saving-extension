@@ -33,7 +33,16 @@ endif()
 add_subdirectory(Thirdparty/DBoW2)
 add_subdirectory(Thirdparty/g2o)
 
-find_package(OpenCV 3.1.0 REQUIRED)
+# 寻找 OpenCV 4.2
+find_package(OpenCV 4.2 QUIET)
+if(NOT OpenCV_FOUND)
+    # 如果没有找到，尝试寻找 OpenCV 3.2
+    find_package(OpenCV 3.2 QUIET)
+    if(NOT OpenCV_FOUND)
+        # 如果还是没有找到，报错
+        message(FATAL_ERROR "OpenCV not found.")
+    endif()
+endif()
 find_package(Eigen3 REQUIRED)
 #find_package(Pangolin REQUIRED)
 
