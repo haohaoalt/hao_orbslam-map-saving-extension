@@ -153,13 +153,8 @@ int main(int argc, char **argv)
     //nh is startup and shutdown of the internal node inside a roscpp program
     ros::NodeHandle nodeHandler;
 
-    // set subscribed topics, names changed for ZED Topics
-    message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/zed2i/zed_node/left/image_rect_gray", 1);
-    message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/zed2i/zed_node/right/image_rect_gray", 1);
-
-
-    // message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/kitti/camera_gray_left/image_raw", 1);
-    // message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/kitti/camera_gray_right/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> left_sub(nodeHandler, "/kitti/camera_gray_left/image_raw", 1);
+    message_filters::Subscriber<sensor_msgs::Image> right_sub(nodeHandler, "/kitti/camera_gray_right/image_raw", 1);
 
 
     //message_filters::Subscriber<sensor_msgs::Image> left_sub(nh, "/camera/left/image_raw", 1);
